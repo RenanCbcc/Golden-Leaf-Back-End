@@ -1,6 +1,7 @@
 using Golden_Leaf_Back_End.Filters;
 using Golden_Leaf_Back_End.Models;
 using Golden_Leaf_Back_End.Models.CategoryModels;
+using Golden_Leaf_Back_End.Models.ClientModels;
 using Golden_Leaf_Back_End.Models.ProductModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -59,6 +60,7 @@ namespace Golden_Leaf_Back_End
             //Injection
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
 
             //CORS Policy
             services.AddCors(options =>
