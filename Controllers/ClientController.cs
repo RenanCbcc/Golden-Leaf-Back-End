@@ -76,7 +76,7 @@ namespace Golden_Leaf_Back_End.Controllers
                 return Created(url, c);
             }
 
-            return BadRequest(ErrorResponse.FromModelState(ModelState));
+            return BadRequest(ErrorResponse.From(ModelState));
         }
 
 
@@ -105,7 +105,7 @@ namespace Golden_Leaf_Back_End.Controllers
                 await repository.Edit(c);
                 return Ok(c);
             }
-            return BadRequest(ErrorResponse.FromModelState(ModelState));
+            return BadRequest(ErrorResponse.From(ModelState));
         }
 
 

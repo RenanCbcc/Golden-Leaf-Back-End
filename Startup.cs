@@ -4,6 +4,7 @@ using Golden_Leaf_Back_End.Models.CategoryModels;
 using Golden_Leaf_Back_End.Models.ClientModels;
 using Golden_Leaf_Back_End.Models.ProductModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -100,6 +101,10 @@ namespace Golden_Leaf_Back_End
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(ErrorResponseFilter));
+                options.Filters.Add(new AuthorizeResponseFilter(new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build()));
+
             }).AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -127,8 +132,9 @@ namespace Golden_Leaf_Back_End
                 });
             }
 
+            app.UseCors();
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

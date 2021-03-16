@@ -107,7 +107,7 @@ namespace Golden_Leaf_Back_End.Controllers
                 return Created(url, p);
             }
 
-            return BadRequest(ErrorResponse.FromModelState(ModelState));
+            return BadRequest(ErrorResponse.From(ModelState));
         }
 
         // PUT: api/Product/
@@ -136,7 +136,7 @@ namespace Golden_Leaf_Back_End.Controllers
                 await repository.Edit(p);
                 return Ok(p);
             }
-            return BadRequest(ErrorResponse.FromModelState(ModelState));
+            return BadRequest(ErrorResponse.From(ModelState));
         }
     }
 

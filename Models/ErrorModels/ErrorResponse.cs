@@ -27,7 +27,7 @@ namespace Golden_Leaf_Back_End.Models.ErrorModels
             };
         }
 
-        internal static ErrorResponse FromModelState(ModelStateDictionary modelState)
+        internal static ErrorResponse From(ModelStateDictionary modelState)
         {
             var errors = modelState.Values.SelectMany(m => m.Errors);
 
@@ -39,13 +39,13 @@ namespace Golden_Leaf_Back_End.Models.ErrorModels
             };
         }
 
-        internal static ErrorResponse FromUnauthorized(string details)
+        internal static ErrorResponse From(string message)
         {
 
             return new ErrorResponse()
             {
                 Code = 100,
-                Message = details,
+                Message = message,
             };
         }
 }
