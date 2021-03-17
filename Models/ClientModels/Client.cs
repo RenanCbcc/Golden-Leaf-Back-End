@@ -1,4 +1,5 @@
 ﻿using Golden_Leaf_Back_End.Models.OrderModels;
+using Golden_Leaf_Back_End.Models.PaymentModels;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,11 @@ namespace Golden_Leaf_Back_End.Models.ClientModels
         {
             Status = Status.Ativo;
             Orders = new HashSet<Order>();
-            Debt = 0;            
+            Payments = new HashSet<Payment>();
+            Debt = 0;
         }
         public ISet<Order> Orders { get; set; }
+        public ISet<Payment> Payments { get; set; }
 
         public bool Notifiable { get; set; }
 

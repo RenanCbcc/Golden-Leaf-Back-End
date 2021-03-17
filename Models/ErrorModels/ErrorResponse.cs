@@ -48,5 +48,10 @@ namespace Golden_Leaf_Back_End.Models.ErrorModels
                 Message = message,
             };
         }
-}
+
+        internal static object FromModelState(ModelStateDictionary modelState)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

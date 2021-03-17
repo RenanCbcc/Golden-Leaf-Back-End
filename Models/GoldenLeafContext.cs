@@ -1,6 +1,7 @@
 ﻿using Golden_Leaf_Back_End.Models.CategoryModels;
 using Golden_Leaf_Back_End.Models.ClientModels;
 using Golden_Leaf_Back_End.Models.OrderModels;
+using Golden_Leaf_Back_End.Models.PaymentModels;
 using Golden_Leaf_Back_End.Models.ProductModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,7 @@ namespace Golden_Leaf_Back_End.Models
         public DbSet<Client> Clients { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Item> Items { get; set; }
-
+        public DbSet<Payment> Payments { get; set; }
         public GoldenLeafContext(DbContextOptions<GoldenLeafContext> options) : base(options)
         {
 
@@ -26,8 +27,7 @@ namespace Golden_Leaf_Back_End.Models
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new ClientConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
-            
-
+            modelBuilder.ApplyConfiguration(new PaymentConfiguration());
         }
     }
 }

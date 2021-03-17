@@ -2,6 +2,8 @@ using Golden_Leaf_Back_End.Filters;
 using Golden_Leaf_Back_End.Models;
 using Golden_Leaf_Back_End.Models.CategoryModels;
 using Golden_Leaf_Back_End.Models.ClientModels;
+using Golden_Leaf_Back_End.Models.OrderModels;
+using Golden_Leaf_Back_End.Models.PaymentModels;
 using Golden_Leaf_Back_End.Models.ProductModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -63,6 +65,8 @@ namespace Golden_Leaf_Back_End
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
 
             //CORS Policy
             services.AddCors(options =>
@@ -104,7 +108,7 @@ namespace Golden_Leaf_Back_End
             });
 
             services.AddApiVersioning();
-           
+
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(ErrorResponseFilter));
@@ -116,7 +120,7 @@ namespace Golden_Leaf_Back_End
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
-                                    
+
 
             //APi documentation
             services.AddSwaggerGen(options =>
@@ -148,7 +152,7 @@ namespace Golden_Leaf_Back_End
                     },
                     Array.Empty<string>()
                 }});
-                                
+
 
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
