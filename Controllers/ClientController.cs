@@ -16,11 +16,14 @@ namespace Golden_Leaf_Back_End.Controllers
     public class ClientController : ControllerBase
     {
         private readonly IClientRepository repository;
+        private readonly IProductRepository productRepository;
 
-        public ClientController(IClientRepository repository)
+        public ClientController(IClientRepository repository, IProductRepository productRepository)
         {
             this.repository = repository;
+            this.productRepository = productRepository;
         }
+
 
         [HttpGet]
         [SwaggerOperation(Summary = "Retrieve a collections of clients.")]
@@ -36,6 +39,20 @@ namespace Golden_Leaf_Back_End.Controllers
             return Ok(list);
         }
 
+        [HttpGet]
+        [Route("{id}/Suggestions")]
+        [SwaggerOperation(Summary = "Retrieve a collections of products.")]
+        [SwaggerResponse(200, "The request has succeeded.", typeof(Pagination<Product>))]
+        [SwaggerResponse(500, "The server encountered an unexpected condition that prevented it from fulfilling the request.", typeof(ErrorResponse))]
+        public async Task<IActionResult> Suggestions(int id, [FromQuery] ProductFilter filter, [FromQuery] EntityOrder order, [FromQuery] PagingParams pagination)
+        {
+            var list = await (await productRepository.SuggestionsTo(id))
+                .AplyFilter(filter)
+                .AplyOrder(order)
+                .ToEntityPaginated(pagination);
+
+            return Ok(list);
+        }
 
 
         [HttpGet("{id}")]

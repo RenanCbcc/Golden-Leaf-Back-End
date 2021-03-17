@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -96,8 +97,14 @@ namespace Golden_Leaf_Back_End
                 }
             );
 
-            services.AddApiVersioning();
+            //I want to use my own state validation implemented in my exception filter.
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
+            services.AddApiVersioning();
+           
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(ErrorResponseFilter));
@@ -109,11 +116,51 @@ namespace Golden_Leaf_Back_End
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
+                                    
 
-
-            services.AddSwaggerGen(c =>
+            //APi documentation
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Golden Leaf", Version = "v1" });
+                options.EnableAnnotations();
+
+                //Fix enums conflicts.
+                options.CustomSchemaIds(type => type.FullName);
+
+                // definition of the security scheme used
+                options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme
+                });
+                //Defines what operations use the abome scheme - (all).
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement{
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = JwtBearerDefaults.AuthenticationScheme
+                        }
+                    },
+                    Array.Empty<string>()
+                }});
+                                
+
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Golden Leaf api",
+                    Description = "Documentação da api de estoque de produtos.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Renan Rosa",
+                        Email = "renannojosa@gmail.com"
+                    },
+                });
             });
         }
 

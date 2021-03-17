@@ -1,5 +1,7 @@
-﻿using Swashbuckle.AspNetCore.Annotations;
+﻿using Golden_Leaf_Back_End.Models.OrderModels;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Collections.Generic;
 
 namespace Golden_Leaf_Back_End.Models.ClientModels
 {
@@ -8,8 +10,10 @@ namespace Golden_Leaf_Back_End.Models.ClientModels
         public Client()
         {
             Status = Status.Ativo;
+            Orders = new HashSet<Order>();
             Debt = 0;            
         }
+        public ISet<Order> Orders { get; set; }
 
         public bool Notifiable { get; set; }
 
