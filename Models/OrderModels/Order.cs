@@ -1,4 +1,5 @@
-﻿using Golden_Leaf_Back_End.Models.ClientModels;
+﻿using Golden_Leaf_Back_End.Models.ClerkModels;
+using Golden_Leaf_Back_End.Models.ClientModels;
 using System;
 using System.Collections.Generic;
 
@@ -13,6 +14,7 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
         }
 
         public Client Client { get; set; }
+        public Clerk Clerk { get; set; }
 
         public DateTime Date { get; set; }
 

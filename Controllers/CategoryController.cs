@@ -22,7 +22,8 @@ namespace Golden_Leaf_Back_End.Controllers
             this.repository = repository;
         }
 
-        [HttpGet]
+
+        [HttpGet] 
         [SwaggerOperation(Summary = "Retrieve a collections of categories.")]
         [SwaggerResponse(200, "The request has succeeded.", typeof(Pagination<Category>))]
         [SwaggerResponse(500, "The server encountered an unexpected condition that prevented it from fulfilling the request.", typeof(ErrorResponse))]

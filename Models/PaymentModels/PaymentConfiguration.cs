@@ -12,6 +12,14 @@ namespace Golden_Leaf_Back_End.Models.PaymentModels
                 .WithMany(c => c.Payments)
                 .HasForeignKey("ClientId");
 
+            builder.Property<string>("CkerkId");
+
+            builder
+               .HasOne(p => p.Clerk)
+               .WithMany(c => c.Payments)
+               .HasForeignKey("CkerkId");
+
+
             builder.Property(p => p.Date)
                 .HasColumnType("datetime")
                .HasDefaultValueSql("getdate()");

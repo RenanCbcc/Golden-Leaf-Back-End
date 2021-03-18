@@ -1,13 +1,15 @@
 ﻿using Golden_Leaf_Back_End.Models.CategoryModels;
+using Golden_Leaf_Back_End.Models.ClerkModels;
 using Golden_Leaf_Back_End.Models.ClientModels;
 using Golden_Leaf_Back_End.Models.OrderModels;
 using Golden_Leaf_Back_End.Models.PaymentModels;
 using Golden_Leaf_Back_End.Models.ProductModels;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Golden_Leaf_Back_End.Models
 {
-    public class GoldenLeafContext : DbContext
+    public class GoldenLeafContext : IdentityDbContext<Clerk>
     {
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }

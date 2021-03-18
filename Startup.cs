@@ -1,6 +1,7 @@
-using Golden_Leaf_Back_End.Filters;
+﻿using Golden_Leaf_Back_End.Filters;
 using Golden_Leaf_Back_End.Models;
 using Golden_Leaf_Back_End.Models.CategoryModels;
+using Golden_Leaf_Back_End.Models.ClerkModels;
 using Golden_Leaf_Back_End.Models.ClientModels;
 using Golden_Leaf_Back_End.Models.OrderModels;
 using Golden_Leaf_Back_End.Models.PaymentModels;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -61,12 +63,23 @@ namespace Golden_Leaf_Back_End
                 }
             });
 
+            //Identity
+            services.AddIdentity<Clerk, IdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = "aáãbcçdeéfghiíjklmnoópqrstuúvwxyzAÁÃBCÇDEÉFGHIÍJKLMNOÓPQRSTUÚVWXYZ ";
+            })
+                .AddEntityFrameworkStores<GoldenLeafContext>()
+                .AddDefaultTokenProviders();
+
             //Injection
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
+
+
 
             //CORS Policy
             services.AddCors(options =>
@@ -101,6 +114,13 @@ namespace Golden_Leaf_Back_End
                 }
             );
 
+            services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy(JwtBearerDefaults.AuthenticationScheme, new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
+                    .RequireAuthenticatedUser().Build());
+            });
+
             //I want to use my own state validation implemented in my exception filter.
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -112,9 +132,6 @@ namespace Golden_Leaf_Back_End
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(ErrorResponseFilter));
-                options.Filters.Add(new AuthorizeResponseFilter(new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build()));
 
             }).AddNewtonsoftJson(options =>
             {
@@ -158,7 +175,7 @@ namespace Golden_Leaf_Back_End
                 {
                     Version = "v1",
                     Title = "Golden Leaf api",
-                    Description = "Documenta��o da api de estoque de produtos.",
+                    Description = "Documentação da api de estoque de produtos.",
                     Contact = new OpenApiContact
                     {
                         Name = "Renan Rosa",

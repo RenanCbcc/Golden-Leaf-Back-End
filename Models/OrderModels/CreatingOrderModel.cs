@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Golden_Leaf_Back_End.Models.OrderModels
 {
@@ -13,7 +10,8 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
             Items = new HashSet<Item>();
         }
 
-        public int CLientId { get; set; }
+        public int ClientId { get; set; }
+        public string ClerkId { get; set; }
 
         [Required]
         public HashSet<Item> Items { get; set; }

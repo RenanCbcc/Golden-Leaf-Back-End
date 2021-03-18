@@ -1,10 +1,12 @@
 ﻿using Golden_Leaf_Back_End.Models;
+using Golden_Leaf_Back_End.Models.ClerkModels;
 using Golden_Leaf_Back_End.Models.ClientModels;
 using Golden_Leaf_Back_End.Models.ErrorModels;
 using Golden_Leaf_Back_End.Models.OrderModels;
 using Golden_Leaf_Back_End.Models.ProductModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -20,14 +22,16 @@ namespace Golden_Leaf_Back_End.Controllers
         private readonly IOrderRepository orderRepository;
         private readonly IClientRepository clientRepository;
         private readonly IProductRepository productRepository;
+        private readonly UserManager<Clerk> userManager;
 
         public OrderController(IOrderRepository orderRepository,
             IClientRepository clientRepository,
-            IProductRepository productRepository)
+            IProductRepository productRepository, UserManager<Clerk> userManager)
         {
             this.orderRepository = orderRepository;
             this.clientRepository = clientRepository;
             this.productRepository = productRepository;
+            this.userManager = userManager;
         }
 
 
@@ -84,10 +88,16 @@ namespace Golden_Leaf_Back_End.Controllers
         {
             if (ModelState.IsValid)
             {
-                var client = await clientRepository.Read(model.CLientId);
+                var client = await clientRepository.Read(model.ClientId);
                 if (client == null)
                 {
-                    return NotFound(ErrorResponse.From($"Cliente com Id {model.CLientId} não foi encontrado."));
+                    return NotFound(ErrorResponse.From($"Cliente com o Id {model.ClientId} não foi encontrado."));
+                }
+
+                var clerk = await userManager.FindByIdAsync(model.ClerkId);
+                if (clerk == null)
+                {
+                    return NotFound(ErrorResponse.From($"Atendent com o Id {model.ClerkId} não foi encontrado."));
                 }
 
                 var order = new Order

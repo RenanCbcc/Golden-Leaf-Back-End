@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Golden_Leaf_Back_End.Models.OrderModels
 {
@@ -16,9 +13,18 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
                .WithMany(c => c.Orders)
                .HasForeignKey("ClientId");
 
+            builder.Property<string>("CkerkId");
+
+            builder
+              .HasOne(o => o.Clerk)
+              .WithMany(c => c.Orders)
+              .HasForeignKey("CkerkId");
+
             builder
                 .HasMany(o => o.Items)
-                .WithOne(i => i.Order);
+                .WithOne(i => i.Order)
+                .HasForeignKey(i => i.OrderId);
+                
 
             builder.Property(c => c.Status).HasMaxLength(20)
                                            .IsRequired()
