@@ -28,43 +28,37 @@ namespace Golden_Leaf_Back_End
     {
         private readonly IConfiguration configuration;
         private readonly IWebHostEnvironment environment;
-        private readonly string stringConnection;
-        private readonly string stringAudience;
+
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             this.configuration = configuration;
             this.environment = environment;
-            if (environment.IsDevelopment())
-            {
-                stringConnection = configuration["ConnectionStrings:SqlServerConnection"];
-                stringAudience = configuration["Jwt:AudienceDevelopment"];
-            }
-            if (environment.IsProduction())
-            {
-                stringConnection = configuration["ConnectionStrings:PostgresqlConnection"];
-                stringAudience = configuration["Jwt:AudienceProduction"];
-            }
-        }
 
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var variables = configuration.GetSection("Development").Get<Variables>();
+
             services.AddDbContextPool<GoldenLeafContext>(options =>
             {
                 if (environment.IsDevelopment())
                 {
-                    options.UseSqlServer(stringConnection);
+                    options.UseSqlServer(variables.Connection);
                 }
+
                 if (environment.IsProduction())
                 {
-                    options.UseNpgsql(stringConnection);
+                    variables = configuration.GetSection("Production").Get<Variables>();
+                    options.UseNpgsql(variables.Connection);
                 }
             });
 
+            services.AddSingleton(variables);
             //Identity
-            services.AddIdentity<Clerk, IdentityRole>(options =>
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
                 options.User.AllowedUserNameCharacters = "aáãbcçdeéfghiíjklmnoópqrstuúvwxyzAÁÃBCÇDEÉFGHIÍJKLMNOÓPQRSTUÚVWXYZ ";
@@ -78,7 +72,7 @@ namespace Golden_Leaf_Back_End
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
-
+            services.AddScoped<IClerkRepository, ClerkRepository>();
 
 
             //CORS Policy
@@ -86,40 +80,38 @@ namespace Golden_Leaf_Back_End
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.AllowAnyMethod().AllowAnyHeader().WithOrigins(stringAudience);
+                    builder.AllowAnyMethod().AllowAnyHeader().WithOrigins(variables.Audience);
                 });
             });
 
-            //Authentication and Autorization
-            services
-                .AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
+            //Authentication
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
                 .AddJwtBearer(options =>
                 {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
+                        ValidIssuer = variables.Issuer,
+
                         ValidateAudience = true,
+                        ValidAudience = variables.Audience,
+
                         ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = configuration["Jwt:Issuer"],
-                        ValidAudience = stringAudience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"])),
-                        ClockSkew = TimeSpan.FromHours(1)
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(variables.Key)),
+
                     };
                 }
             );
 
-            services.AddAuthorization(auth =>
-            {
-                auth.AddPolicy(JwtBearerDefaults.AuthenticationScheme, new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
-                    .RequireAuthenticatedUser().Build());
-            });
 
             //I want to use my own state validation implemented in my exception filter.
             services.Configure<ApiBehaviorOptions>(options =>
@@ -132,6 +124,7 @@ namespace Golden_Leaf_Back_End
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(ErrorResponseFilter));
+                options.Filters.Add(new AuthorizeResponseFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build()));
 
             }).AddNewtonsoftJson(options =>
             {
@@ -204,6 +197,7 @@ namespace Golden_Leaf_Back_End
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+
 
             app.UseEndpoints(endpoints =>
             {

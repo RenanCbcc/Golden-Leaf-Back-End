@@ -26,6 +26,7 @@ namespace Golden_Leaf_Back_End.Controllers
 
 
         [HttpGet]
+        [AllowAnonymous]
         [SwaggerOperation(Summary = "Retrieve a collections of clients.")]
         [SwaggerResponse(200, "The request has succeeded.", typeof(Pagination<Client>))]
         [SwaggerResponse(500, "The server encountered an unexpected condition that prevented it from fulfilling the request.", typeof(ErrorResponse))]

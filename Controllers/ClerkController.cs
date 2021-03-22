@@ -1,9 +1,9 @@
-﻿using Golden_Leaf_Back_End.Models.ClerkModels;
+﻿using Golden_Leaf_Back_End.Models;
+using Golden_Leaf_Back_End.Models.ClerkModels;
 using Golden_Leaf_Back_End.Models.ErrorModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,16 +18,21 @@ namespace Golden_Leaf_Back_End.Controllers
     [ApiController]
     public class ClerkController : ControllerBase
     {
-        private readonly UserManager<Clerk> userManager;
-        private readonly SignInManager<Clerk> signInManager;
-        private readonly IConfiguration configuration;
+        private readonly UserManager<IdentityUser> userManager;
+        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly IClerkRepository clerkRepository;
+        private readonly Variables variables;
 
-        public ClerkController(UserManager<Clerk> userManager,
-            SignInManager<Clerk> signInManager, IConfiguration configuration)
+        public ClerkController(
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
+            IClerkRepository clerkRepository,
+            Variables variables)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.configuration = configuration;
+            this.clerkRepository = clerkRepository;
+            this.variables = variables;
         }
 
         [HttpPost]
@@ -45,15 +50,18 @@ namespace Golden_Leaf_Back_End.Controllers
                     var succeeded = await signInManager.UserManager.CheckPasswordAsync(user, model.Password);
                     if (succeeded)
                     {
-                        var clerk = new
-                        {
-                            Token = GenerateJwt(model.Email),
-                            Name = user.UserName,
-                            Photo = user.Photo,
-                            Id = user.Id
-                        };
+                        var clerk = clerkRepository.Read(user.Id);
 
-                        return Ok(clerk);
+                        return Ok(
+                            new
+                            {
+                                Id = clerk.Id,
+                                UserId = user.Id,
+                                Name = user.UserName,
+                                Photo = clerk.Photo,
+
+                            }
+                        );
                     }
 
                     return Unauthorized(ErrorResponse.From("Login ou senha incorretos."));
@@ -72,11 +80,12 @@ namespace Golden_Leaf_Back_End.Controllers
         {
             if (ModelState.IsValid)
             {
-                var clerk = new Clerk() { UserName = model.Name, Email = model.Email };
-                var result = await userManager.CreateAsync(clerk, model.Password);
+                var user = new IdentityUser() { UserName = model.Name, Email = model.Email };
+                var result = await userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await signInManager.SignInAsync(clerk, isPersistent: false);
+                    await signInManager.SignInAsync(user, isPersistent: false);
+                    await clerkRepository.Add(new Clerk() { User = user });
                     return Ok("Usuário criado! Faça o login.");
                 }
                 return BadRequest(result.Errors);
@@ -90,18 +99,17 @@ namespace Golden_Leaf_Back_End.Controllers
             var rights = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub,email),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Exp,DateTime.Now.AddHours(1).ToString())
+                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
             };
 
-            var key = Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]);
+            var key = Encoding.UTF8.GetBytes(variables.Key);
             var symetricKey = new SymmetricSecurityKey(key);
             var credentials = new SigningCredentials(symetricKey, SecurityAlgorithms.HmacSha256);
             var securityToken = new JwtSecurityToken
                 (
-                issuer: configuration["Jwt:Issuer"],
-                audience: configuration["Jwt:Audience"],
-                expires: DateTime.Now.AddHours(1),
+                issuer: variables.Issuer,
+                audience: variables.Audience,
+                expires: DateTime.Now.AddHours(2),
                 claims: rights,
                 signingCredentials: credentials
                 );

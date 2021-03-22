@@ -3,19 +3,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Golden_Leaf_Back_End.Migrations
 {
-    public partial class Fifth : Migration
+    public partial class Sixth : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "CkerkId",
-                table: "Payments",
-                type: "nvarchar(450)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "CkerkId",
-                table: "Orders",
+                name: "UserId",
+                table: "Clerks",
                 type: "nvarchar(450)",
                 nullable: true);
 
@@ -38,7 +32,6 @@ namespace Golden_Leaf_Back_End.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Photo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -166,14 +159,9 @@ namespace Golden_Leaf_Back_End.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_CkerkId",
-                table: "Payments",
-                column: "CkerkId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orders_CkerkId",
-                table: "Orders",
-                column: "CkerkId");
+                name: "IX_Clerks_UserId",
+                table: "Clerks",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -215,17 +203,9 @@ namespace Golden_Leaf_Back_End.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Orders_AspNetUsers_CkerkId",
-                table: "Orders",
-                column: "CkerkId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Payments_AspNetUsers_CkerkId",
-                table: "Payments",
-                column: "CkerkId",
+                name: "FK_Clerks_AspNetUsers_UserId",
+                table: "Clerks",
+                column: "UserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
@@ -234,12 +214,8 @@ namespace Golden_Leaf_Back_End.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Orders_AspNetUsers_CkerkId",
-                table: "Orders");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Payments_AspNetUsers_CkerkId",
-                table: "Payments");
+                name: "FK_Clerks_AspNetUsers_UserId",
+                table: "Clerks");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -263,20 +239,12 @@ namespace Golden_Leaf_Back_End.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropIndex(
-                name: "IX_Payments_CkerkId",
-                table: "Payments");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Orders_CkerkId",
-                table: "Orders");
+                name: "IX_Clerks_UserId",
+                table: "Clerks");
 
             migrationBuilder.DropColumn(
-                name: "CkerkId",
-                table: "Payments");
-
-            migrationBuilder.DropColumn(
-                name: "CkerkId",
-                table: "Orders");
+                name: "UserId",
+                table: "Clerks");
         }
     }
 }

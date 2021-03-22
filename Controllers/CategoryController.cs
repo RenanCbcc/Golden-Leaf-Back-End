@@ -2,7 +2,6 @@
 using Golden_Leaf_Back_End.Models.CategoryModels;
 using Golden_Leaf_Back_End.Models.ErrorModels;
 using Golden_Leaf_Back_End.Models.ProductModels;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -23,7 +22,7 @@ namespace Golden_Leaf_Back_End.Controllers
         }
 
 
-        [HttpGet] 
+        [HttpGet]
         [SwaggerOperation(Summary = "Retrieve a collections of categories.")]
         [SwaggerResponse(200, "The request has succeeded.", typeof(Pagination<Category>))]
         [SwaggerResponse(500, "The server encountered an unexpected condition that prevented it from fulfilling the request.", typeof(ErrorResponse))]
@@ -74,7 +73,7 @@ namespace Golden_Leaf_Back_End.Controllers
         [SwaggerResponse(201, "The category was created", typeof(string))]
         [SwaggerResponse(500, "The server encountered an unexpected condition that prevented it from fulfilling the request.", typeof(ErrorResponse))]
         [SwaggerResponse(400, "The was unable to processe the request.", typeof(ErrorResponse))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> Post([FromBody] CreatingCategoryModel model)
         {
             if (ModelState.IsValid)
@@ -99,7 +98,7 @@ namespace Golden_Leaf_Back_End.Controllers
         [SwaggerResponse(500, "The server encountered an unexpected condition that prevented it from fulfilling the request.", typeof(ErrorResponse))]
         [SwaggerResponse(400, "The was unable to processe the request.", typeof(ErrorResponse))]
         [SwaggerResponse(404, "The origin server did not find a current representation for the target resource or is not willing to disclose that one exists.", typeof(ErrorResponse))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> Put(EditingCategoryModel model)
         {
             if (ModelState.IsValid)

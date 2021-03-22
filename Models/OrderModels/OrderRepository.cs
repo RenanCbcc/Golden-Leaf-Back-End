@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,7 +33,7 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
 
         public IQueryable<Order> Browse()
         {
-            return context.Orders.Include(o => o.Client);
+            return context.Orders.Include(o => o.Client).Include(o => o.Clerk);
         }
 
         public IQueryable<Item> Browse(int Id)

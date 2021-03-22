@@ -8,17 +8,17 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
+            
             builder
                .HasOne(o => o.Client)
                .WithMany(c => c.Orders)
                .HasForeignKey("ClientId");
 
-            builder.Property<string>("CkerkId");
-
+            
             builder
               .HasOne(o => o.Clerk)
               .WithMany(c => c.Orders)
-              .HasForeignKey("CkerkId");
+              .HasForeignKey("ClerkId");
 
             builder
                 .HasMany(o => o.Items)

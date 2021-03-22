@@ -27,8 +27,7 @@ namespace Golden_Leaf_Back_End.Models.ProductModels
         public string Description { get; set; }
 
         [Required(ErrorMessage = "O produto precisa ter um código.")]
-        [StringLength(maximumLength: 13, MinimumLength = 9,
-        ErrorMessage = "O código do produto deve ter no mímino 9 caracteres e no máximo 13.")]
+        [RegularExpression(@"^\d{9,13}$", ErrorMessage = "O código do produto deve ter no mímino 9 caracteres e no máximo 13.")]
         public string Code { get; set; }
 
         [Required(ErrorMessage = "O produto precisa ter uma quantidade.")]

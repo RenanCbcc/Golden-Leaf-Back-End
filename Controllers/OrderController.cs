@@ -4,9 +4,7 @@ using Golden_Leaf_Back_End.Models.ClientModels;
 using Golden_Leaf_Back_End.Models.ErrorModels;
 using Golden_Leaf_Back_End.Models.OrderModels;
 using Golden_Leaf_Back_End.Models.ProductModels;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -22,16 +20,17 @@ namespace Golden_Leaf_Back_End.Controllers
         private readonly IOrderRepository orderRepository;
         private readonly IClientRepository clientRepository;
         private readonly IProductRepository productRepository;
-        private readonly UserManager<Clerk> userManager;
+        private readonly IClerkRepository clerkRepository;
 
         public OrderController(IOrderRepository orderRepository,
             IClientRepository clientRepository,
-            IProductRepository productRepository, UserManager<Clerk> userManager)
+            IProductRepository productRepository,
+            IClerkRepository clerkRepository)
         {
             this.orderRepository = orderRepository;
             this.clientRepository = clientRepository;
             this.productRepository = productRepository;
-            this.userManager = userManager;
+            this.clerkRepository = clerkRepository;
         }
 
 
@@ -83,7 +82,7 @@ namespace Golden_Leaf_Back_End.Controllers
         [SwaggerResponse(500, "The server encountered an unexpected condition that prevented it from fulfilling the request.", typeof(ErrorResponse))]
         [SwaggerResponse(400, "The was unable to processe the request.", typeof(ErrorResponse))]
         [SwaggerResponse(404, "The origin server did not find a current representation for the target resource or is not willing to disclose that one exists.", typeof(ErrorResponse))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> Post(CreatingOrderModel model)
         {
             if (ModelState.IsValid)
@@ -94,7 +93,7 @@ namespace Golden_Leaf_Back_End.Controllers
                     return NotFound(ErrorResponse.From($"Cliente com o Id {model.ClientId} não foi encontrado."));
                 }
 
-                var clerk = await userManager.FindByIdAsync(model.ClerkId);
+                var clerk = await clerkRepository.Read(model.ClientId);
                 if (clerk == null)
                 {
                     return NotFound(ErrorResponse.From($"Atendent com o Id {model.ClerkId} não foi encontrado."));
@@ -102,6 +101,7 @@ namespace Golden_Leaf_Back_End.Controllers
 
                 var order = new Order
                 {
+                    Clerk = clerk,
                     Client = client,
                     Items = model.Items,
                     Date = DateTime.Now,
