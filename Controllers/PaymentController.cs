@@ -1,15 +1,15 @@
 ﻿using Golden_Leaf_Back_End.Models;
+using Golden_Leaf_Back_End.Models.ClerkModels;
 using Golden_Leaf_Back_End.Models.ClientModels;
 using Golden_Leaf_Back_End.Models.ErrorModels;
 using Golden_Leaf_Back_End.Models.OrderModels;
 using Golden_Leaf_Back_End.Models.PaymentModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Golden_Leaf_Back_End.Controllers
@@ -22,15 +22,19 @@ namespace Golden_Leaf_Back_End.Controllers
         private readonly IPaymentRepository paymentRepository;
         private readonly IClientRepository clientRepository;
         private readonly IOrderRepository orderRepository;
+        private readonly UserManager<ApplicationUser> userManager;
 
         public PaymentController(
             IPaymentRepository paymentRepository,
             IClientRepository clientRepository,
-            IOrderRepository orderRepository)
+            IOrderRepository orderRepository,
+            UserManager<ApplicationUser> userManager
+            )
         {
             this.paymentRepository = paymentRepository;
             this.clientRepository = clientRepository;
             this.orderRepository = orderRepository;
+            this.userManager = userManager;
         }
 
         [HttpGet]
@@ -62,6 +66,12 @@ namespace Golden_Leaf_Back_End.Controllers
                 if (client == null)
                 {
                     return NotFound($"Cliente com Id {model.ClientId} não foi encontrado.");
+                }
+
+                var clerk = await userManager.FindByIdAsync(model.ClerkId);
+                if (clerk == null)
+                {
+                    return NotFound(ErrorResponse.From($"Atendent com o Id {model.ClerkId} não foi encontrado."));
                 }
 
                 if (model.Value <= 0 || model.Value > client.Debt)

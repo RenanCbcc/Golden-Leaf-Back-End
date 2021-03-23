@@ -11,7 +11,7 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
         }
 
         public int ClientId { get; set; }
-        public int ClerkId { get; set; }
+        public string ClerkId { get; set; }
 
         [Required]
         public HashSet<Item> Items { get; set; }

@@ -18,7 +18,7 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
             builder
               .HasOne(o => o.Clerk)
               .WithMany(c => c.Orders)
-              .HasForeignKey("ClerkId");
+              .HasForeignKey("ApplicationUserId");
 
             builder
                 .HasMany(o => o.Items)

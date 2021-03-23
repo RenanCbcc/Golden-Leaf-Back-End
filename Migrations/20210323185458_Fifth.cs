@@ -3,13 +3,19 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Golden_Leaf_Back_End.Migrations
 {
-    public partial class Sixth : Migration
+    public partial class Fifth : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "UserId",
-                table: "Clerks",
+                name: "ApplicationUserId",
+                table: "Payments",
+                type: "nvarchar(450)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "ApplicationUserId",
+                table: "Orders",
                 type: "nvarchar(450)",
                 nullable: true);
 
@@ -32,6 +38,7 @@ namespace Golden_Leaf_Back_End.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Photo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -159,9 +166,14 @@ namespace Golden_Leaf_Back_End.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Clerks_UserId",
-                table: "Clerks",
-                column: "UserId");
+                name: "IX_Payments_ApplicationUserId",
+                table: "Payments",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_ApplicationUserId",
+                table: "Orders",
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -203,9 +215,17 @@ namespace Golden_Leaf_Back_End.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Clerks_AspNetUsers_UserId",
-                table: "Clerks",
-                column: "UserId",
+                name: "FK_Orders_AspNetUsers_ApplicationUserId",
+                table: "Orders",
+                column: "ApplicationUserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Payments_AspNetUsers_ApplicationUserId",
+                table: "Payments",
+                column: "ApplicationUserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
@@ -214,8 +234,12 @@ namespace Golden_Leaf_Back_End.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Clerks_AspNetUsers_UserId",
-                table: "Clerks");
+                name: "FK_Orders_AspNetUsers_ApplicationUserId",
+                table: "Orders");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Payments_AspNetUsers_ApplicationUserId",
+                table: "Payments");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -239,12 +263,20 @@ namespace Golden_Leaf_Back_End.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropIndex(
-                name: "IX_Clerks_UserId",
-                table: "Clerks");
+                name: "IX_Payments_ApplicationUserId",
+                table: "Payments");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Orders_ApplicationUserId",
+                table: "Orders");
 
             migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "Clerks");
+                name: "ApplicationUserId",
+                table: "Payments");
+
+            migrationBuilder.DropColumn(
+                name: "ApplicationUserId",
+                table: "Orders");
         }
     }
 }

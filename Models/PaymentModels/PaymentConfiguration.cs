@@ -7,17 +7,16 @@ namespace Golden_Leaf_Back_End.Models.PaymentModels
     {
         public void Configure(EntityTypeBuilder<Payment> builder)
         {
-          
+
             builder
                 .HasOne(p => p.Client)
                 .WithMany(c => c.Payments)
                 .HasForeignKey("ClientId");
 
-            
             builder
                .HasOne(p => p.Clerk)
                .WithMany(c => c.Payments)
-               .HasForeignKey("ClerkId");
+               .HasForeignKey("ApplicationUserId");
 
 
             builder.Property(p => p.Date)

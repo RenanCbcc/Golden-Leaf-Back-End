@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Golden_Leaf_Back_End.Migrations
 {
     [DbContext(typeof(GoldenLeafContext))]
-    [Migration("20210322185234_Sixth")]
-    partial class Sixth
+    [Migration("20210323185458_Fifth")]
+    partial class Fifth
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,24 +40,72 @@ namespace Golden_Leaf_Back_End.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Golden_Leaf_Back_End.Models.ClerkModels.Clerk", b =>
+            modelBuilder.Entity("Golden_Leaf_Back_End.Models.ClerkModels.ApplicationUser", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Photo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
 
-                    b.ToTable("Clerks");
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers");
                 });
 
             modelBuilder.Entity("Golden_Leaf_Back_End.Models.ClientModels.Client", b =>
@@ -138,8 +186,8 @@ namespace Golden_Leaf_Back_End.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ClerkId")
-                        .HasColumnType("int");
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("ClientId")
                         .HasColumnType("int");
@@ -159,7 +207,7 @@ namespace Golden_Leaf_Back_End.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClerkId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ClientId");
 
@@ -176,8 +224,8 @@ namespace Golden_Leaf_Back_End.Migrations
                     b.Property<float>("Amount")
                         .HasColumnType("real");
 
-                    b.Property<int?>("ClerkId")
-                        .HasColumnType("int");
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("ClientId")
                         .HasColumnType("int");
@@ -189,7 +237,7 @@ namespace Golden_Leaf_Back_End.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClerkId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ClientId");
 
@@ -288,71 +336,6 @@ namespace Golden_Leaf_Back_End.Migrations
                     b.ToTable("AspNetRoleClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -433,15 +416,6 @@ namespace Golden_Leaf_Back_End.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Golden_Leaf_Back_End.Models.ClerkModels.Clerk", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Golden_Leaf_Back_End.Models.OrderModels.Item", b =>
                 {
                     b.HasOne("Golden_Leaf_Back_End.Models.OrderModels.Order", "Order")
@@ -463,9 +437,9 @@ namespace Golden_Leaf_Back_End.Migrations
 
             modelBuilder.Entity("Golden_Leaf_Back_End.Models.OrderModels.Order", b =>
                 {
-                    b.HasOne("Golden_Leaf_Back_End.Models.ClerkModels.Clerk", "Clerk")
+                    b.HasOne("Golden_Leaf_Back_End.Models.ClerkModels.ApplicationUser", "Clerk")
                         .WithMany("Orders")
-                        .HasForeignKey("ClerkId");
+                        .HasForeignKey("ApplicationUserId");
 
                     b.HasOne("Golden_Leaf_Back_End.Models.ClientModels.Client", "Client")
                         .WithMany("Orders")
@@ -478,9 +452,9 @@ namespace Golden_Leaf_Back_End.Migrations
 
             modelBuilder.Entity("Golden_Leaf_Back_End.Models.PaymentModels.Payment", b =>
                 {
-                    b.HasOne("Golden_Leaf_Back_End.Models.ClerkModels.Clerk", "Clerk")
+                    b.HasOne("Golden_Leaf_Back_End.Models.ClerkModels.ApplicationUser", "Clerk")
                         .WithMany("Payments")
-                        .HasForeignKey("ClerkId");
+                        .HasForeignKey("ApplicationUserId");
 
                     b.HasOne("Golden_Leaf_Back_End.Models.ClientModels.Client", "Client")
                         .WithMany("Payments")
@@ -513,7 +487,7 @@ namespace Golden_Leaf_Back_End.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Golden_Leaf_Back_End.Models.ClerkModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -522,7 +496,7 @@ namespace Golden_Leaf_Back_End.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Golden_Leaf_Back_End.Models.ClerkModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -537,7 +511,7 @@ namespace Golden_Leaf_Back_End.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Golden_Leaf_Back_End.Models.ClerkModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -546,7 +520,7 @@ namespace Golden_Leaf_Back_End.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Golden_Leaf_Back_End.Models.ClerkModels.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -558,7 +532,7 @@ namespace Golden_Leaf_Back_End.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("Golden_Leaf_Back_End.Models.ClerkModels.Clerk", b =>
+            modelBuilder.Entity("Golden_Leaf_Back_End.Models.ClerkModels.ApplicationUser", b =>
                 {
                     b.Navigation("Orders");
 

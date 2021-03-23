@@ -58,10 +58,10 @@ namespace Golden_Leaf_Back_End
 
             services.AddSingleton(variables);
             //Identity
-            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
-                options.User.AllowedUserNameCharacters = "aáãbcçdeéfghiíjklmnoópqrstuúvwxyzAÁÃBCÇDEÉFGHIÍJKLMNOÓPQRSTUÚVWXYZ ";
+                options.User.AllowedUserNameCharacters = null; //Validation will be done in the model;
             })
                 .AddEntityFrameworkStores<GoldenLeafContext>()
                 .AddDefaultTokenProviders();
@@ -72,8 +72,7 @@ namespace Golden_Leaf_Back_End
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
-            services.AddScoped<IClerkRepository, ClerkRepository>();
-
+            
 
             //CORS Policy
             services.AddCors(options =>
@@ -124,7 +123,7 @@ namespace Golden_Leaf_Back_End
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(ErrorResponseFilter));
-                options.Filters.Add(new AuthorizeResponseFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build()));
+                //options.Filters.Add(new AuthorizeResponseFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build()));
 
             }).AddNewtonsoftJson(options =>
             {

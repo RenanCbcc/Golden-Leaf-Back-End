@@ -5,6 +5,7 @@ namespace Golden_Leaf_Back_End.Models.PaymentModels
     public class CreatingPaymentModel
     {
         public int ClientId { get; set; }
+        public string ClerkId { get; set; }
 
         [DataType(DataType.Currency)]
         public float Value { get; set; }

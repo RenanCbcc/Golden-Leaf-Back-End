@@ -16,22 +16,19 @@ namespace Golden_Leaf_Back_End.Controllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    public class ClerkController : ControllerBase
+    public class AccountController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly SignInManager<IdentityUser> signInManager;
-        private readonly IClerkRepository clerkRepository;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
         private readonly Variables variables;
 
-        public ClerkController(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
-            IClerkRepository clerkRepository,
-            Variables variables)
+        public AccountController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+                    Variables variables)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.clerkRepository = clerkRepository;
             this.variables = variables;
         }
 
@@ -50,16 +47,16 @@ namespace Golden_Leaf_Back_End.Controllers
                     var succeeded = await signInManager.UserManager.CheckPasswordAsync(user, model.Password);
                     if (succeeded)
                     {
-                        var clerk = clerkRepository.Read(user.Id);
 
                         return Ok(
                             new
                             {
-                                Id = clerk.Id,
-                                UserId = user.Id,
-                                Name = user.UserName,
-                                Photo = clerk.Photo,
-
+                                user.Id,
+                                user.UserName,
+                                Token = GenerateJwt(model.Email),
+                                user.PhoneNumber,
+                                user.Email,
+                                user.Photo,
                             }
                         );
                     }
@@ -80,13 +77,12 @@ namespace Golden_Leaf_Back_End.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser() { UserName = model.Name, Email = model.Email };
+                var user = new ApplicationUser() { UserName = model.Name, Email = model.Email };
                 var result = await userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     await signInManager.SignInAsync(user, isPersistent: false);
-                    await clerkRepository.Add(new Clerk() { User = user });
-                    return Ok("Usuário criado! Faça o login.");
+                    return Ok(new { user.Id, user.UserName, user.PhoneNumber, user.Photo });
                 }
                 return BadRequest(result.Errors);
             }

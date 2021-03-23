@@ -5,6 +5,7 @@ using Golden_Leaf_Back_End.Models.ErrorModels;
 using Golden_Leaf_Back_End.Models.OrderModels;
 using Golden_Leaf_Back_End.Models.ProductModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -20,17 +21,18 @@ namespace Golden_Leaf_Back_End.Controllers
         private readonly IOrderRepository orderRepository;
         private readonly IClientRepository clientRepository;
         private readonly IProductRepository productRepository;
-        private readonly IClerkRepository clerkRepository;
+        private readonly UserManager<ApplicationUser> userManager;
 
         public OrderController(IOrderRepository orderRepository,
             IClientRepository clientRepository,
             IProductRepository productRepository,
-            IClerkRepository clerkRepository)
+            UserManager<ApplicationUser> userManager
+            )
         {
             this.orderRepository = orderRepository;
             this.clientRepository = clientRepository;
             this.productRepository = productRepository;
-            this.clerkRepository = clerkRepository;
+            this.userManager = userManager;
         }
 
 
@@ -93,7 +95,7 @@ namespace Golden_Leaf_Back_End.Controllers
                     return NotFound(ErrorResponse.From($"Cliente com o Id {model.ClientId} não foi encontrado."));
                 }
 
-                var clerk = await clerkRepository.Read(model.ClientId);
+                var clerk = await userManager.FindByIdAsync(model.ClerkId);
                 if (clerk == null)
                 {
                     return NotFound(ErrorResponse.From($"Atendent com o Id {model.ClerkId} não foi encontrado."));
