@@ -4,7 +4,6 @@ using Golden_Leaf_Back_End.Models.ClientModels;
 using Golden_Leaf_Back_End.Models.ErrorModels;
 using Golden_Leaf_Back_End.Models.OrderModels;
 using Golden_Leaf_Back_End.Models.PaymentModels;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +38,7 @@ namespace Golden_Leaf_Back_End.Controllers
 
         [HttpGet]
         [SwaggerOperation(Summary = "Retrieve a collections of payments.")]
-        [SwaggerResponse(200, "The request has succeeded.", typeof(Pagination<Payment>))]
+        [SwaggerResponse(200, "The request has succeeded.", typeof(Pagination<PaymentApiModel>))]
         [SwaggerResponse(500, "The server encountered an unexpected condition that prevented it from fulfilling the request.", typeof(ErrorResponse))]
         public async Task<IActionResult> Get([FromQuery] PaymentFilter filter, [FromQuery] EntityOrder order, [FromQuery] PagingParams pagination)
         {
@@ -57,7 +56,7 @@ namespace Golden_Leaf_Back_End.Controllers
         [SwaggerResponse(201, "The category was created", typeof(string))]
         [SwaggerResponse(500, "The server encountered an unexpected condition that prevented it from fulfilling the request.", typeof(ErrorResponse))]
         [SwaggerResponse(400, "The was unable to processe the request.", typeof(ErrorResponse))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
         public async Task<IActionResult> Post(CreatingPaymentModel model)
         {
             if (ModelState.IsValid)
@@ -94,6 +93,7 @@ namespace Golden_Leaf_Back_End.Controllers
                 var p = new Payment
                 {
                     Client = client,
+                    Clerk = clerk,
                     Amount = model.Value,
                     Date = DateTime.Now,
                 };

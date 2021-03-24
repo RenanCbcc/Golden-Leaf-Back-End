@@ -7,7 +7,6 @@ using Golden_Leaf_Back_End.Models.OrderModels;
 using Golden_Leaf_Back_End.Models.PaymentModels;
 using Golden_Leaf_Back_End.Models.ProductModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -72,7 +71,7 @@ namespace Golden_Leaf_Back_End
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
-            
+
 
             //CORS Policy
             services.AddCors(options =>
@@ -123,7 +122,7 @@ namespace Golden_Leaf_Back_End
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(ErrorResponseFilter));
-                //options.Filters.Add(new AuthorizeResponseFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build()));
+
 
             }).AddNewtonsoftJson(options =>
             {
@@ -183,13 +182,7 @@ namespace Golden_Leaf_Back_End
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(options =>
-                {
-                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Golden Leaf v1");
-                    options.DefaultModelsExpandDepth(-1);
 
-                });
             }
 
             app.UseCors();
@@ -197,6 +190,13 @@ namespace Golden_Leaf_Back_End
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Golden Leaf v1");
+                options.DefaultModelsExpandDepth(-1);
+
+            });
 
             app.UseEndpoints(endpoints =>
             {

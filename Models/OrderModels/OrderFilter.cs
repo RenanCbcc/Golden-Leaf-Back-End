@@ -5,19 +5,20 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
 {
     public static class OrderFilterExtentions
     {
-        public static IQueryable<Order> AplyFilter(this IQueryable<Order> query, OrderFilter filter)
+        public static IQueryable<OrderApiModel> AplyFilter(this IQueryable<OrderApiModel> query, OrderFilter filter)
         {
             if (filter != null)
             {
                 if (!string.IsNullOrEmpty(filter.Client))
                 {
-                    query = query.Where(o => o.Client.Name.Contains(filter.Client));
+                    query = query.Where(o => o.ClientName.Contains(filter.Client));
                 }
 
-                if (filter.ClientId != 0)
+                if (!string.IsNullOrEmpty(filter.Clerk))
                 {
-                    query = query.Where(o => o.Client.Id == filter.ClientId);
+                    query = query.Where(p => p.ClerkName.Contains(filter.Client));
                 }
+
 
                 if (filter.ValueBiggerThan != 0)
                 {
@@ -48,7 +49,7 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
     public class OrderFilter
     {
         public string Client { get; set; }
-        public int ClientId { get; set; }
+        public string Clerk { get; set; }
         public float ValueBiggerThan { get; set; }
         public float ValueLessThan { get; set; }
         public DateTime? Before { get; set; }

@@ -8,7 +8,7 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
     public interface IOrderRepository
     {
         Task<Order> Read(int Id);
-        IQueryable<Order> Browse();
+        IQueryable<OrderApiModel> Browse();
         IQueryable<Item> Browse(int Id);
         Task<IEnumerable<Order>> Pending(int id);
         Task Add(Order order);
@@ -30,11 +30,22 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
             await context.SaveChangesAsync();
         }
 
-
-        public IQueryable<Order> Browse()
+        public IQueryable<OrderApiModel> Browse()
         {
-            return context.Orders.Include(o => o.Client).Include(o => o.Clerk);
+            return context.Orders.Include(o => o.Client).Include(o => o.Clerk)
+                .Select(o => new OrderApiModel
+                {
+                    Id = o.Id,
+                    Value = o.Value,
+                    Date = o.Date,
+                    Status = o.Status,
+                    ClientId = o.Client.Id,
+                    ClientName = o.Client.Name,
+                    ClerkId = o.Clerk.Id,
+                    ClerkName = o.Clerk.UserName,
+                });
         }
+
 
         public IQueryable<Item> Browse(int Id)
         {
@@ -61,5 +72,7 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
                 .OrderBy(o => o.Value)
                 .ToListAsync();
         }
+
+        
     }
 }

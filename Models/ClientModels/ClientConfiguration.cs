@@ -11,9 +11,10 @@ namespace Golden_Leaf_Back_End.Models.ClientModels
             builder.Property(c => c.Name).HasMaxLength(50).IsRequired();
             builder.Property(c => c.Address).HasMaxLength(100).IsRequired();
             builder.Property(c => c.PhoneNumber).HasMaxLength(11).IsRequired();
-            builder.Property(c => c.LastPurchase)
-               .HasColumnType("datetime")
-               .HasDefaultValueSql("getdate()");
+            
+            builder.Property(c => c.LastPurchase)               
+               .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
             builder.Property(c => c.Status)
                 .HasMaxLength(20)
                 .IsRequired()

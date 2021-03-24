@@ -8,7 +8,7 @@ namespace Golden_Leaf_Back_End.Models.PaymentModels
 {
     public interface IPaymentRepository
     {
-        IQueryable<Payment> Browse();
+        IQueryable<PaymentApiModel> Browse();
         Task Add(Payment payment);
         Task<float> Total(int id);
     }
@@ -27,9 +27,20 @@ namespace Golden_Leaf_Back_End.Models.PaymentModels
             await context.SaveChangesAsync();
         }
 
-        public IQueryable<Payment> Browse()
+        public IQueryable<PaymentApiModel> Browse()
         {
-            return context.Payments.Include(p => p.Client);
+            return context.Payments.Include(p => p.Client).Include(p => p.Clerk)
+                .Select(p => new PaymentApiModel
+                {
+                    Id = p.Id,
+                    Amount = p.Amount,
+                    Date = p.Date,
+                    ClientId = p.Client.Id,
+                    ClientName = p.Client.Name,
+                    ClerkId = p.Clerk.Id,
+                    ClerkName = p.Clerk.UserName,
+                });
+
         }
 
         public async Task<float> Total(int id)

@@ -19,9 +19,8 @@ namespace Golden_Leaf_Back_End.Models.PaymentModels
                .HasForeignKey("ApplicationUserId");
 
 
-            builder.Property(p => p.Date)
-                .HasColumnType("datetime")
-               .HasDefaultValueSql("getdate()");
+            builder.Property(p => p.Date)                
+               .HasDefaultValueSql("CURRENT_TIMESTAMP");
         }
     }
 }

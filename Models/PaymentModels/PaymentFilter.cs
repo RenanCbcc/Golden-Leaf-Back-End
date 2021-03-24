@@ -5,13 +5,17 @@ namespace Golden_Leaf_Back_End.Models.PaymentModels
 {
     public static class OrderFilterExtentions
     {
-        public static IQueryable<Payment> AplyFilter(this IQueryable<Payment> query, PaymentFilter filter)
+        public static IQueryable<PaymentApiModel> AplyFilter(this IQueryable<PaymentApiModel> query, PaymentFilter filter)
         {
             if (filter != null)
             {
                 if (!string.IsNullOrEmpty(filter.Client))
                 {
-                    query = query.Where(p => p.Client.Name.Contains(filter.Client));
+                    query = query.Where(p => p.ClientName.Contains(filter.Client));
+                }
+                if (!string.IsNullOrEmpty(filter.Clerk))
+                {
+                    query = query.Where(p => p.ClerkName.Contains(filter.Client));
                 }
 
                 if (filter.AmountBiggerThan != 0)
@@ -34,7 +38,6 @@ namespace Golden_Leaf_Back_End.Models.PaymentModels
                     query = query.Where(p => p.Date > filter.After);
                 }
 
-
             }
             return query;
         }
@@ -43,6 +46,7 @@ namespace Golden_Leaf_Back_End.Models.PaymentModels
     public class PaymentFilter
     {
         public string Client { get; set; }
+        public string Clerk { get; set; }
         public float AmountBiggerThan { get; set; }
         public float AmountLessThan { get; set; }
         public DateTime? Before { get; set; }

@@ -33,9 +33,8 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
                 e => (Status)Enum.Parse(typeof(Status), e)
                 );
 
-            builder.Property(o => o.Date)
-               .HasColumnType("datetime")
-               .HasDefaultValueSql("getdate()");
+            builder.Property(o => o.Date)              
+               .HasDefaultValueSql("CURRENT_TIMESTAMP");
         }
     }
 }

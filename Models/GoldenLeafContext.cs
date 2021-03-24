@@ -19,7 +19,7 @@ namespace Golden_Leaf_Back_End.Models
         public DbSet<Payment> Payments { get; set; }
         public GoldenLeafContext(DbContextOptions<GoldenLeafContext> options) : base(options)
         {
-
+            this.Database.EnsureCreated();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

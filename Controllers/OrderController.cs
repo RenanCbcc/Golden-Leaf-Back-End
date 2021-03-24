@@ -38,7 +38,7 @@ namespace Golden_Leaf_Back_End.Controllers
 
         [HttpGet]
         [SwaggerOperation(Summary = "Retrieve a collection of orders.")]
-        [SwaggerResponse(200, "The request has succeeded.", typeof(Pagination<Order>))]
+        [SwaggerResponse(200, "The request has succeeded.", typeof(Pagination<OrderApiModel>))]
         [SwaggerResponse(500, "The server encountered an unexpected condition that prevented it from fulfilling the request.", typeof(ErrorResponse))]
         public async Task<IActionResult> Get([FromQuery] OrderFilter filter, [FromQuery] EntityOrder order, [FromQuery] PagingParams pagination)
         {
