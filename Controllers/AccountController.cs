@@ -1,6 +1,8 @@
-﻿using Golden_Leaf_Back_End.Models;
+﻿using Golden_Leaf_Back_End.Models.AccountModels;
 using Golden_Leaf_Back_End.Models.ClerkModels;
 using Golden_Leaf_Back_End.Models.ErrorModels;
+using Golden_Leaf_Back_End.Settings;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +22,15 @@ namespace Golden_Leaf_Back_End.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
-        private readonly Variables variables;
+        private readonly JWT jwt;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-                    Variables variables)
+            SignInManager<ApplicationUser> signInManager, JWT jwt)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.variables = variables;
+            this.jwt = jwt;
         }
 
         [HttpPost]
@@ -37,6 +38,9 @@ namespace Golden_Leaf_Back_End.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
+            //Log out for security.
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
             if (ModelState.IsValid)
             {
                 var user = await userManager.FindByEmailAsync(model.Email);
@@ -47,23 +51,12 @@ namespace Golden_Leaf_Back_End.Controllers
                     var succeeded = await signInManager.UserManager.CheckPasswordAsync(user, model.Password);
                     if (succeeded)
                     {
-
-                        return Ok(
-                            new
-                            {
-                                user.Id,
-                                user.UserName,
-                                Token = GenerateJwt(model.Email),
-                                user.PhoneNumber,
-                                user.Email,
-                                user.Photo,
-                            }
-                        );
+                        return Ok(CreateAuthenticatedUser(user));
                     }
 
-                    return Unauthorized(ErrorResponse.From("Login ou senha incorretos."));
+                    return Unauthorized(ErrorResponse.From($"Credenciais incorretas para o usuário com o email {model.Email}"));
                 }
-                return Unauthorized(ErrorResponse.From("Login ou senha incorretos."));
+                return Unauthorized(ErrorResponse.From($"Nenhuma conta registrada com o email {model.Email}"));
 
             }
 
@@ -73,7 +66,7 @@ namespace Golden_Leaf_Back_End.Controllers
         [HttpPost]
         [Route("Register")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterModel model)
         {
             if (ModelState.IsValid)
             {
@@ -89,24 +82,49 @@ namespace Golden_Leaf_Back_End.Controllers
             return BadRequest(ModelState);
         }
 
-        private string GenerateJwt(string email)
+        private UserModel CreateAuthenticatedUser(ApplicationUser user)
         {
-            //token(header + payload ->(rights) + signature)
-            var rights = new[]
+            var token = new Token
             {
-                new Claim(JwtRegisteredClaimNames.Sub,email),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
+                Value = CreateJwtToken(user),
+                Expires = DateTime.Now.AddMinutes(jwt.DurationInMinutes)
             };
 
-            var key = Encoding.UTF8.GetBytes(variables.Key);
+            var authenticationModel = new UserModel
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Token = token,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email,
+                Photo = user.Photo,
+            };
+            return authenticationModel;
+        }
+        private string CreateJwtToken(ApplicationUser user)
+        {
+            /*
+             * This is the most important section of the JWT. It contains the claims, 
+             * which is technically the data we are trying to secure. Claims are details 
+             * about the user, expiration time of the token, etc
+             */
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("uid", user.Id)
+            };
+
+            var key = Encoding.UTF8.GetBytes(jwt.Key);
             var symetricKey = new SymmetricSecurityKey(key);
             var credentials = new SigningCredentials(symetricKey, SecurityAlgorithms.HmacSha256);
             var securityToken = new JwtSecurityToken
                 (
-                issuer: variables.Issuer,
-                audience: variables.Audience,
-                expires: DateTime.Now.AddHours(2),
-                claims: rights,
+                issuer: jwt.Issuer,
+                audience: jwt.Audience,
+                expires: DateTime.Now.AddMinutes(jwt.DurationInMinutes),
+                claims: claims,
                 signingCredentials: credentials
                 );
 

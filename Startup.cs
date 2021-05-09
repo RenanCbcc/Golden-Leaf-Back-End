@@ -6,6 +6,7 @@ using Golden_Leaf_Back_End.Models.ClientModels;
 using Golden_Leaf_Back_End.Models.OrderModels;
 using Golden_Leaf_Back_End.Models.PaymentModels;
 using Golden_Leaf_Back_End.Models.ProductModels;
+using Golden_Leaf_Back_End.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -33,29 +35,29 @@ namespace Golden_Leaf_Back_End
         {
             this.configuration = configuration;
             this.environment = environment;
-
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var variables = configuration.GetSection("Development").Get<Variables>();
+
+            var jwt = configuration.GetSection("Development").Get<JWT>();
 
             services.AddDbContextPool<GoldenLeafContext>(options =>
             {
                 if (environment.IsDevelopment())
                 {
-                    options.UseSqlServer(variables.Connection);
+                    options.UseSqlServer(configuration.GetConnectionString("Development"));
                 }
 
                 if (environment.IsProduction())
                 {
-                    variables = configuration.GetSection("Production").Get<Variables>();
-                    options.UseNpgsql(variables.Connection);
+                    jwt = configuration.GetSection("Production").Get<JWT>();
+                    options.UseNpgsql(configuration.GetConnectionString("Production"));
                 }
             });
 
-            services.AddSingleton(variables);
+
             //Identity
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -78,11 +80,12 @@ namespace Golden_Leaf_Back_End
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.AllowAnyMethod().AllowAnyHeader().WithOrigins(variables.Audience);
+                    builder.AllowAnyMethod().AllowAnyHeader().WithOrigins(jwt.Audience);
                 });
             });
 
             //Authentication
+            services.AddSingleton(jwt);
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -95,16 +98,16 @@ namespace Golden_Leaf_Back_End
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = variables.Issuer,
+                        ValidIssuer = jwt.Issuer,
 
                         ValidateAudience = true,
-                        ValidAudience = variables.Audience,
+                        ValidAudience = jwt.Audience,
 
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero,
 
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(variables.Key)),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
 
                     };
                 }
@@ -182,8 +185,8 @@ namespace Golden_Leaf_Back_End
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-
             }
+
 
             app.UseCors();
             app.UseRouting();

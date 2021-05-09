@@ -11,11 +11,17 @@ namespace Golden_Leaf_Back_End.Models.PaymentModels
             {
                 if (!string.IsNullOrEmpty(filter.Client))
                 {
-                    query = query.Where(p => p.ClientName.Contains(filter.Client));
+                    query = query.Where(p => 
+                        p.ClientName
+                        .ToLower()
+                        .Contains(filter.Client.ToLower()));
                 }
                 if (!string.IsNullOrEmpty(filter.Clerk))
                 {
-                    query = query.Where(p => p.ClerkName.Contains(filter.Client));
+                    query = query.Where(p => 
+                        p.ClerkName
+                        .ToLower()
+                        .Contains(filter.Client.ToLower()));
                 }
 
                 if (filter.AmountBiggerThan != 0)

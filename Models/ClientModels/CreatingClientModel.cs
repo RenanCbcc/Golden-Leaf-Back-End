@@ -16,7 +16,7 @@ namespace Golden_Leaf_Back_End.Models.ClientModels
         public string Address { get; set; }
 
         [Required]        
-        [RegularExpression(@"^[1-9]{2}[1-9]{4,5}[0-9]{4}$/g", ErrorMessage = "O número de telefone deve ter exatamente 11 caracteres.")]
+        [RegularExpression(@"^[1-9]{2}[1-9]{4,5}[0-9]{4}$", ErrorMessage = "O número de telefone deve ter exatamente 11 caracteres.")]
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
 

@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0-focal AS build
 WORKDIR /src
 COPY ["Golden-Leaf-Back-End.csproj", ""]
 RUN dotnet restore "./Golden-Leaf-Back-End.csproj"
@@ -18,4 +18,4 @@ RUN dotnet publish "Golden-Leaf-Back-End.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Golden-Leaf-Back-End.dll"]
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet Golden-Leaf-Back-End.dll

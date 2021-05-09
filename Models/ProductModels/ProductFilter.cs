@@ -13,7 +13,10 @@ namespace Golden_Leaf_Back_End.Models.ProductModels
             {
                 if (!string.IsNullOrEmpty(filter.Description))
                 {
-                    query = query.Where(p => p.Description.Contains(filter.Description));
+                    query = query.Where(p =>
+                            p.Description
+                            .ToLower()
+                            .Contains(filter.Description.ToLower()));
                 }
 
                 if (filter.QuantityBiggerThan != 0)

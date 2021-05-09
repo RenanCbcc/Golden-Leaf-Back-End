@@ -11,7 +11,7 @@ namespace Golden_Leaf_Back_End.Models.ProductModels
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
-            builder.Property(p => p.Description).HasMaxLength(50).IsRequired();
+            builder.Property(p => p.Description).HasMaxLength(100).IsRequired();
             builder.Property(p => p.Code).HasMaxLength(13).IsRequired();
             builder.HasAlternateKey(p => p.Code);
 

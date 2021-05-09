@@ -1,4 +1,5 @@
-﻿using Golden_Leaf_Back_End.Models.CategoryModels;
+﻿using Golden_Leaf_Back_End.Models.AccountModels;
+using Golden_Leaf_Back_End.Models.CategoryModels;
 using Golden_Leaf_Back_End.Models.ClerkModels;
 using Golden_Leaf_Back_End.Models.ClientModels;
 using Golden_Leaf_Back_End.Models.OrderModels;
@@ -28,6 +29,7 @@ namespace Golden_Leaf_Back_End.Models
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new ClientConfiguration());
+            modelBuilder.ApplyConfiguration(new AccountConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new PaymentConfiguration());
            

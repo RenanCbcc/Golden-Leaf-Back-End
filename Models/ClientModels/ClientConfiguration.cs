@@ -21,6 +21,7 @@ namespace Golden_Leaf_Back_End.Models.ClientModels
                 .HasConversion<string>(e => e.ToString(), e => (Status)Enum.Parse(typeof(Status), e)
                 );
 
+            
         }
     }
 }

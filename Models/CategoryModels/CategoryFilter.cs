@@ -9,7 +9,7 @@ namespace Golden_Leaf_Back_End.Models.CategoryModels
             {
                 if (!string.IsNullOrEmpty(filter.Title))
                 {
-                    query = query.Where(c => c.Title.Contains(filter.Title));
+                    query = query.Where(c => c.Title.ToLower().Contains(filter.Title.ToLower()));
                 }
 
             }

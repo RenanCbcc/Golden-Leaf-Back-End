@@ -11,12 +11,18 @@ namespace Golden_Leaf_Back_End.Models.OrderModels
             {
                 if (!string.IsNullOrEmpty(filter.Client))
                 {
-                    query = query.Where(o => o.ClientName.Contains(filter.Client));
+                    query = query.Where(o => 
+                        o.ClientName
+                        .ToLower()
+                        .Contains(filter.Client.ToLower()));
                 }
 
                 if (!string.IsNullOrEmpty(filter.Clerk))
                 {
-                    query = query.Where(p => p.ClerkName.Contains(filter.Client));
+                    query = query.Where(p => 
+                        p.ClerkName
+                        .ToLower()
+                        .Contains(filter.Client.ToLower()));
                 }
 
 

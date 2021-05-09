@@ -10,12 +10,12 @@ namespace Golden_Leaf_Back_End.Models.ClientModels
             {
                 if (!string.IsNullOrEmpty(filter.Name))
                 {
-                    query = query.Where(c => c.Name.Contains(filter.Name));
+                    query = query.Where(c => c.Name.ToLower().Contains(filter.Name.ToLower()));
                 }
 
                 if (!string.IsNullOrEmpty(filter.Address))
                 {
-                    query = query.Where(c => c.Address.Contains(filter.Address));
+                    query = query.Where(c => c.Address.ToLower().Contains(filter.Address.ToLower()));
                 }
 
                 if (!string.IsNullOrEmpty(filter.PhoneNumber))
